@@ -1,18 +1,24 @@
 package com.learn.java.service;
 
-import com.learn.java.dto.movie.MovieDto;
+import com.learn.java.config.AppConfig;
+import com.learn.java.dto.ImageDto;
+import com.learn.java.dto.MovieDto;
+import com.learn.java.dto.genre.GenreDto;
 import com.learn.java.entity.GenreEntity;
+import com.learn.java.entity.ImageEntity;
 import com.learn.java.entity.MovieEntity;
 import com.learn.java.exception.AlreadyExistException;
 import com.learn.java.exception.NotFoundException;
 import com.learn.java.repository.GenreRepository;
 import com.learn.java.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,59 +30,95 @@ public class MovieService {
     @Autowired
     GenreRepository genreRepository;
 
-    @Value("${upload.path}")
-    private String uploadPath;
+    @Autowired
+    ImageService imageService;
 
-    public List<MovieEntity> getAllMovies(Integer genreId) {
+    @Autowired
+    AppConfig appConfig;
+
+    public List<MovieDto> getAllMovies(Integer genreId) {
+        List<MovieEntity> movies;
+        System.out.println(genreId);
+
         if (genreId != null) {
-            return movieRepository.findByGenresId(genreId);
+            movies = movieRepository.findByGenresId(genreId);
         } else {
-            return movieRepository.findAll();
+            movies = movieRepository.findAll();
         }
+
+        return movies
+                .stream()
+                .map(movieEntity -> MovieDto.toModel(appConfig, movieEntity))
+                .collect(Collectors.toList());
     }
 
-    public MovieEntity getMovieById(Long movieId) throws NotFoundException {
-        MovieEntity movie = movieRepository
+    public MovieDto getMovieById(Long movieId) throws NotFoundException {
+        MovieEntity movieEntity = movieRepository
                 .findById(movieId)
                 .orElseThrow(() -> new NotFoundException("Фильм не найден"));
 
-        return movie;
+        return MovieDto.toModel(appConfig, movieEntity);
     }
 
-    public MovieDto createMovie(MovieDto movie) throws AlreadyExistException {
+    public MovieEntity createMovie(MovieDto movie) {
         if (movieRepository.findByName(movie.getName()).isPresent()) {
             throw new AlreadyExistException("Такой фильм уже существует");
         }
 
-        MultipartFile poster = movie.getPoster();
-        System.out.println(poster);
-//        String posterUrl = "";
-//        try {
-//            posterUrl = fileSystemRepository.save(poster.getBytes(), poster.getOriginalFilename());
-//        } catch (Exception e) {
-//            System.out.println(e);
-//        }
+        Set<GenreEntity> genreEntities = movie.getGenres()
+                .stream()
+                .map(genre -> genre.getId() == null ? genreRepository.save(genre) : genre)
+                .collect(Collectors.toSet());
 
-//        MovieEntity movieEntity = new MovieEntity();
-//        movieEntity.setName(movie.getName());
-//        movieEntity.setDescription(movie.getDescription());
-//        movieEntity.setGenres(movie.getGenres());
-//        movieEntity.setReleaseDate(movie.getReleaseDate());
-//        movieEntity.setPosterUrl(posterUrl);
-//
-//        return saveMovie(movieEntity);
-        return movie;
+        MovieEntity movieEntity = new MovieEntity();
+        movieEntity.setName(movie.getName());
+        movieEntity.setDescription(movie.getDescription());
+        movieEntity.setGenres(genreEntities);
+        movieEntity.setReleaseDate(movie.getReleaseDate());
+
+        if (Objects.nonNull(movie.getPoster())) {
+            try {
+                movieEntity.setPoster(imageService.getImage(movie.getPoster().getId()));
+            } catch (NotFoundException e) {
+                movieEntity.setPoster(null);
+            }
+        } else {
+            movieEntity.setPoster(null);
+        }
+
+        return movieRepository.save(movieEntity);
     }
 
-    public MovieEntity updateMovie(Long movieId, MovieEntity movie) throws NotFoundException {
+    public MovieEntity updateMovie(Long movieId, MovieDto movie) throws NotFoundException {
         if (movieRepository.findById(movieId).isEmpty()) {
             throw new NotFoundException("Такого фильма не существует");
         }
-        movie.setId(movieId);
-        return saveMovie(movie);
+        Set<GenreEntity> genreEntities = movie.getGenres()
+                .stream()
+                .map(genre -> genre.getId() == null ? genreRepository.save(genre) : genre)
+                .collect(Collectors.toSet());
+
+        MovieEntity movieEntity = new MovieEntity();
+        movieEntity.setId(movie.getId());
+        movieEntity.setName(movie.getName());
+        movieEntity.setDescription(movie.getDescription());
+        movieEntity.setGenres(genreEntities);
+        movieEntity.setReleaseDate(movie.getReleaseDate());
+
+        if (Objects.nonNull(movie.getPoster())) {
+            try {
+                movieEntity.setPoster(imageService.getImage(movie.getPoster().getId()));
+            } catch (NotFoundException e) {
+                movieEntity.setPoster(null);
+            }
+        } else {
+            movieEntity.setPoster(null);
+        }
+        return saveMovie(movieEntity);
     }
 
     public void deleteMovie(Long movieId) throws NotFoundException {
+        Optional<MovieEntity> movie = movieRepository.findById(movieId);
         if (movieRepository.findById(movieId).isEmpty()) {
             throw new NotFoundException("Такого фильма не существует");
         }
@@ -90,6 +132,7 @@ public class MovieService {
                 .map(genre -> genre.getId() == null ? genreRepository.save(genre) : genre)
                 .collect(Collectors.toSet());
         movie.setGenres(genres);
+        System.out.println(movie);
         return movieRepository.save(movie);
     }
 }

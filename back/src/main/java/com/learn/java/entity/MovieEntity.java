@@ -1,8 +1,6 @@
 package com.learn.java.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -16,7 +14,7 @@ public class MovieEntity {
 
     private String description;
 
-    private Date releaseDate;
+    private Integer releaseDate;
 
     @ManyToMany
     @JoinTable(
@@ -26,14 +24,16 @@ public class MovieEntity {
     )
     private Set<GenreEntity> genres;
 
-    private String posterUrl;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "images_id", referencedColumnName = "id")
+    private ImageEntity poster;
 
-    public String getPosterUrl() {
-        return posterUrl;
+    public ImageEntity getPoster() {
+        return poster;
     }
 
-    public void setPosterUrl(String posterUrl) {
-        this.posterUrl = posterUrl;
+    public void setPoster(ImageEntity poster) {
+        this.poster = poster;
     }
 
     public Long getId() {
@@ -60,11 +60,11 @@ public class MovieEntity {
         this.description = description;
     }
 
-    public Date getReleaseDate() {
+    public Integer getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    public void setReleaseDate(Integer releaseDate) {
         this.releaseDate = releaseDate;
     }
 

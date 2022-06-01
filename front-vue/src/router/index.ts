@@ -41,7 +41,7 @@ const router = createRouter({
         },
         {
             path: '/movies/:id/edit',
-            name: 'movie-detail',
+            name: 'movie-edit',
             component: () => import('@/views/movies/MovieEditView.vue'),
         },
         {
@@ -53,6 +53,14 @@ const router = createRouter({
             path: '/genres/create',
             name: 'genre-create',
             component: () => import('@/views/genres/GenreCreateView.vue'),
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('@/views/NotFound.vue'),
+            meta: {
+                layout: AppLayoutsEnum.login,
+            },
         },
     ],
 });

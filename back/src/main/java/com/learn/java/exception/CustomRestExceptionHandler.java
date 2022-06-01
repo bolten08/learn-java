@@ -45,9 +45,11 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AlreadyExistException.class)
     protected ResponseEntity<Object> handleAlreadyExist(AlreadyExistException ex) {
-//        ApiError apiError = new ApiError(NOT_FOUND);
-//        apiError.setMessage(ex.getMessage());
-//        return buildResponseEntity(apiError);
         return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    protected ResponseEntity<Object> handleNotFound(NotFoundException ex) {
+        return ResponseEntity.notFound().build();
     }
 }

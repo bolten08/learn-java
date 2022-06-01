@@ -25,6 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] AUTH_WHITELIST = {
             "/api/user/signin",
             "/api/user/signup",
+            "/static/**",
     };
 
     @Autowired

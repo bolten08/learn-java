@@ -6,8 +6,8 @@ import com.learn.java.dto.user.JwtResponse;
 import com.learn.java.dto.user.SignupRequest;
 import com.learn.java.dto.user.UserDto;
 import com.learn.java.entity.UserEntity;
-import com.learn.java.exception.user.UserAlreadyExistException;
-import com.learn.java.exception.user.UserNotFoundException;
+import com.learn.java.exception.AlreadyExistException;
+import com.learn.java.exception.NotFoundException;
 import com.learn.java.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,9 +31,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserEntity signUp(SignupRequest signupRequest) throws UserAlreadyExistException {
+    public UserEntity signUp(SignupRequest signupRequest) throws AlreadyExistException {
         if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
-            throw new UserAlreadyExistException("Пользователь уже существует");
+            throw new AlreadyExistException("Пользователь уже существует");
         }
 
         UserEntity user = new UserEntity(
@@ -59,10 +59,10 @@ public class UserService {
         return new JwtResponse(jwt);
     }
 
-    public UserDto getUser(String email) throws UserNotFoundException {
+    public UserDto getUser(String email) throws NotFoundException {
         UserEntity user = userRepository
                 .findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         return UserDto.toDto(user);
     }

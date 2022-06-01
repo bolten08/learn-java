@@ -1,7 +1,5 @@
 package com.learn.java.controller;
 
-import com.learn.java.exception.user.UserAlreadyExistException;
-import com.learn.java.exception.user.UserNotFoundException;
 import com.learn.java.dto.user.SigninRequest;
 import com.learn.java.dto.user.SignupRequest;
 import com.learn.java.service.UserService;
@@ -21,14 +19,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity getUser(Principal principal) {
-        try {
-            return ResponseEntity.ok(userService.getUser(principal.getName()));
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            System.out.println(e);
-            return ResponseEntity.badRequest().body("Ошибка");
-        }
+        return ResponseEntity.ok(userService.getUser(principal.getName()));
     }
 
     @PostMapping("/signin")
@@ -38,14 +29,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity signUp(@Valid @RequestBody SignupRequest signupRequest) {
-        System.out.println("[Request] /user/signup");
-        try {
-            userService.signUp(signupRequest);
-            return ResponseEntity.ok().build();
-        } catch (UserAlreadyExistException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Ошибка");
-        }
+        userService.signUp(signupRequest);
+        return ResponseEntity.ok().build();
     }
 }
