@@ -9,7 +9,8 @@
             v-model:description="values.description"
             v-model:genres="values.genres"
             v-model:release-date="values.releaseDate"
-            v-model:poster="values.poster"
+            v-model:poster-id="values.posterId"
+            v-model:poster-src="values.posterSrc"
             :genres-options="genresOptions"
             @submit="onMovieCreate"
         />
@@ -36,7 +37,8 @@
         description: '',
         releaseDate: '',
         genres: [],
-        poster: null,
+        posterId: null,
+        posterSrc: '',
     });
 
     // Lifecycle
@@ -54,7 +56,10 @@
         });
         try {
             await createMovie({
-                ...values,
+                name: values.name,
+                description: values.description,
+                releaseDate: values.releaseDate,
+                posterId: values.posterId,
                 genres,
             });
             router.push('/movies');

@@ -9,7 +9,8 @@
             v-model:description="values.description"
             v-model:genres="values.genres"
             v-model:release-date="values.releaseDate"
-            v-model:poster="values.poster"
+            v-model:poster-id="values.posterId"
+            v-model:poster-src="values.posterSrc"
             :genres-options="genresOptions"
             @submit="onMovieUpdate"
         />
@@ -34,7 +35,8 @@
         description: '',
         releaseDate: '',
         genres: [],
-        poster: null,
+        posterId: null,
+        posterSrc: '',
     });
 
     // Lifecycle
@@ -50,7 +52,8 @@
             values.description = movieRes.data.description;
             values.releaseDate = movieRes.data.releaseDate;
             values.genres = movieRes.data.genres;
-            values.poster = movieRes.data.poster;
+            values.posterId = movieRes.data.poster?.id;
+            values.posterSrc = movieRes.data.poster?.src || '';
         } catch (err) {
             console.error(err);
         }
@@ -65,7 +68,10 @@
         });
         try {
             await updateMovie(route.params.id, {
-                ...values,
+                name: values.name,
+                description: values.description,
+                releaseDate: values.releaseDate,
+                posterId: values.posterId,
                 genres,
             });
             router.push(`/movies/${route.params.id}`);

@@ -15,7 +15,7 @@
     import AppHeader from '@/components/layouts/AppHeader.vue';
     import AppFooter from '@/components/layouts/AppFooter.vue';
 
-    useLifecycleLogger({name: 'AppLayoutError'});
+    useLifecycleLogger({name: 'AppLayoutDefault'});
 </script>
 
 <style lang="scss" module>

@@ -1,9 +1,8 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import {loadLayoutMiddleware} from '@/router/middleware/loadLayout.middleware';
 import {AppLayoutsEnum} from '@/layouts/layouts.types';
-import {getToken, setAuthHeader} from '@/services/jwtService';
-import {useUserStore} from '@/stores/user';
-import {fetchUser} from '@/api/user/userApi';
+import {withLayouts} from '@/router/middleware/withLayouts';
+import {withAuth} from '@/router/middleware/withAuth';
+import {withProgress} from '@/router/middleware/withProgress';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,11 +49,6 @@ const router = createRouter({
             component: () => import('@/views/genres/GenresView.vue'),
         },
         {
-            path: '/genres/create',
-            name: 'genre-create',
-            component: () => import('@/views/genres/GenreCreateView.vue'),
-        },
-        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('@/views/NotFound.vue'),
@@ -65,36 +59,4 @@ const router = createRouter({
     ],
 });
 
-router.beforeEach(loadLayoutMiddleware);
-
-const WHITE_LIST = ['/signin', '/signup'];
-router.beforeEach(async (to, from, next) => {
-    const userStore = useUserStore();
-    const token = getToken();
-
-    if (token) {
-        setAuthHeader(token);
-        if (!userStore.user) {
-            try {
-                const resUser = await fetchUser();
-                userStore.setUser(resUser.data);
-            } catch (err) {
-                console.log(err);
-            }
-        }
-        //
-        // if (to.path === '/login') {
-        //     next({path: '/movies'});
-        // } else {
-        //     next();
-        // }
-    }
-    // else if (WHITE_LIST.indexOf(to.path) !== -1) {
-    //     next();
-    // } else {
-    //     next(`/login?redirect=${to.path}`);
-    // }
-    next();
-});
-
-export default router;
+export default withProgress(withAuth(withLayouts(router)));

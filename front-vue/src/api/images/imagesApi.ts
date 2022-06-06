@@ -7,7 +7,7 @@ const endpoints = {
     UPLOAD: 'upload/images',
 };
 
-export function uploadImage(body: FormData): Promise<AxiosResponse<Array<IImageDto>>> {
+export function uploadImage(body: FormData): Promise<AxiosResponse<IImageDto>> {
     return axiosClient.post(endpoints.UPLOAD, body);
 }
 

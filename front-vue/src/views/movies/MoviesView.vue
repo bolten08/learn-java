@@ -41,6 +41,7 @@
     watch(genreId, () => {
         loadMovies();
     });
+    // watch(() => route.query.genre, loadMovies);
 
     // Lifecycle
     onMounted(() => {

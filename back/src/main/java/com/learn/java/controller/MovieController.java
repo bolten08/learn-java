@@ -1,6 +1,6 @@
 package com.learn.java.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.learn.java.dto.MovieCreateDto;
 import com.learn.java.dto.MovieDto;
 import com.learn.java.entity.MovieEntity;
 import com.learn.java.service.MovieService;
@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/movies")
@@ -29,16 +30,16 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<MovieEntity> createMovie(@RequestBody MovieDto movie) {
+    public ResponseEntity createMovie(@RequestBody MovieCreateDto movie) {
         return ResponseEntity.ok(movieService.createMovie(movie));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MovieEntity> updateMovie(
             @PathVariable("id") Long movieId,
-            @RequestBody MovieEntity movieEntity
+            @RequestBody MovieCreateDto movie
     ) {
-        return ResponseEntity.ok(movieService.updateMovie(movieId, movieEntity));
+        return ResponseEntity.ok(movieService.updateMovie(movieId, movie));
     }
 
     @DeleteMapping("/{id}")

@@ -6,7 +6,7 @@
                     Постер
                 </h6>
                 <AppFileUpload
-                    :preview="poster !== null ? poster.src : undefined"
+                    :preview="posterSrc"
                     @change="onImageUpload"
                 />
             </div>
@@ -74,20 +74,23 @@
     import type {IImageDto} from '@/api/images/types/IImageDto';
 
     const props = defineProps({
-        poster: {
-            type: Object as PropType<IImageDto>,
-        },
         name: {
             type: String as PropType<string>,
         },
         description: {
             type: String as PropType<string>,
         },
+        releaseDate: {
+            type: [String, Number] as Prop<string | number>,
+        },
         genres: {
             type: Array as PropType<Array<IGenreDto>>,
         },
-        releaseDate: {
-            type: [String, Number] as Prop<string | number>,
+        posterId: {
+            type: Number as PropType<number>,
+        },
+        posterSrc: {
+            type: String as PropType<string>,
         },
         genresOptions: {
             type: Array as PropType<Array<IGenreDto>>,
@@ -99,7 +102,8 @@
         'update:description',
         'update:releaseDate',
         'update:genres',
-        'update:poster',
+        'update:posterId',
+        'update:posterSrc',
         'submit',
     ]);
 
@@ -108,7 +112,7 @@
         const formData = new FormData();
         formData.append('image', file);
         const {data: image} = await uploadImage(formData);
-        emits('update:poster', image);
+        emits('update:poster-id', image.id);
+        emits('update:poster-src', image.src);
     };
-
 </script>
