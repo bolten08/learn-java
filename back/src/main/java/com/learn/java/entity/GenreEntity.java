@@ -1,13 +1,8 @@
 package com.learn.java.entity;
 
-import javax.persistence.*;
-import java.util.List;
 
-@Entity
-@Table(name = "genres")
+//@Table(name = "genres")
 public class GenreEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String name;

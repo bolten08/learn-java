@@ -1,7 +1,7 @@
-package com.learn.java.repository;
-
-import com.learn.java.entity.ImageEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface ImageRepository extends JpaRepository<ImageEntity, Long> {
-}
+//package com.learn.java.repository;
+//
+//import com.learn.java.entity.ImageEntity;
+//import org.springframework.data.jpa.repository.JpaRepository;
+//
+//public interface ImageRepository extends JpaRepository<ImageEntity, Long> {
+//}

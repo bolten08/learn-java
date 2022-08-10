@@ -31,7 +31,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserEntity signUp(SignupRequest signupRequest) throws AlreadyExistException {
+    public void signUp(SignupRequest signupRequest) throws AlreadyExistException {
         if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
             throw new AlreadyExistException("Пользователь уже существует");
         }
@@ -43,7 +43,7 @@ public class UserService {
                 signupRequest.getLastName()
         );
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public JwtResponse signIn(SigninRequest signinRequest) {

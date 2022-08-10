@@ -1,12 +1,8 @@
 package com.learn.java.entity;
 
-import javax.persistence.*;
 
-@Entity
-@Table(name = "images")
+//@Table(name = "images")
 public class ImageEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String fileName;
 
